@@ -24,6 +24,7 @@ using std::endl;
 using std::string;
 using std::cerr;
 using cv::Vec3b;
+using cv::Point2f;
 
 inline void scale(cv::Mat m, double alpha = 0, double beta = 1) {
     cv::normalize(m, m, alpha, beta, cv::NORM_MINMAX);

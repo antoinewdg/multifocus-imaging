@@ -7,6 +7,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(SOURCE_FILES src/main.cpp
         src/utils.h
         src/splining.cpp src/splining.h
+        src/alignment.cpp src/alignment.h
         )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
