@@ -7,7 +7,6 @@
 #include <opencv2/features2d/features2d.hpp>
 #include "opencv2/xfeatures2d.hpp"
 #include "utils.h"
-#include "alignment.h"
 #include "splining.h"
 
 using cv::Vec3b;
