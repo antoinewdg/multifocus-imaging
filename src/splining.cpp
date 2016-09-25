@@ -84,27 +84,32 @@ vector<Mat_<float>> compute_laplacian_pyramid(Mat_<float> src, Mat_<float> w) {
     return L;
 }
 
-Mat_<Vec3b> merge_images(Mat_<Vec3b> &im_a, Mat_<Vec3b> &im_b) {
+Mat_<Vec3b> merge_images(Mat_<Vec3b> &im_a, Mat_<Vec3b> &im_b, Mat_<float> region) {
     vector<Mat_<float>> vec_a = separate_channels(im_a);
     vector<Mat_<float>> vec_b = separate_channels(im_b);
     vector<Mat_<float>> vec_s;
     for (int i = 0; i < 3; i++) {
-        vec_s.push_back(merge_images(vec_a[i], vec_b[i]));
+        vec_s.push_back(merge_images(vec_a[i], vec_b[i], region));
     }
     return merge_channels(vec_s);
 }
 
-Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b) {
+Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> region) {
 
     Mat_<float> result;
     Mat_<float> w = generating_kernel(0.3f);
+    if (region.empty()) {
+        region = generate_half_mask(im_a.cols);
+    }
+
     vector<Mat_<float>> LA = compute_laplacian_pyramid(im_a, w);
     vector<Mat_<float>> LB = compute_laplacian_pyramid(im_b, w);
     vector<Mat_<float>> LS;
+    vector<Mat_<float>> masks = compute_gaussian_pyramid(region, w);
+
 
     for (int l = 0; l < LA.size(); l++) {
-        auto mask = generate_half_mask(LA[l].rows);
-        LS.push_back(LA[l].mul(mask) + LB[l].mul(1.0f - mask));
+        LS.push_back(LA[l].mul(masks[l]) + LB[l].mul(1.0f - masks[l]));
     }
 
     result = LS.back().clone();
