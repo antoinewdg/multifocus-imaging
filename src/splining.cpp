@@ -53,10 +53,13 @@ Mat_<float> generate_half_mask(int n) {
     return mask;
 }
 
-vector<Mat_<float>> compute_gaussian_pyramid(Mat_<float> src, Mat_<float> w) {
+vector<Mat_<float>> compute_gaussian_pyramid(Mat_<float> src, Mat_<float> w, int max_height ) {
     vector<Mat_<float>> G = {src};
-
-    for (int n = src.rows; n > 3;) {
+    if(max_height < 0){
+        max_height = std::numeric_limits<int>::max();
+    }
+    int h = 0;
+    for (int n = src.rows; n > 3 && h < max_height; h++) {
         n = n / 2 + 1;
         G.emplace_back(n, n);
     }
@@ -69,8 +72,8 @@ vector<Mat_<float>> compute_gaussian_pyramid(Mat_<float> src, Mat_<float> w) {
 }
 
 
-vector<Mat_<float>> compute_laplacian_pyramid(Mat_<float> src, Mat_<float> w) {
-    vector<Mat_<float>> G = compute_gaussian_pyramid(src, w);
+vector<Mat_<float>> compute_laplacian_pyramid(Mat_<float> src, Mat_<float> w, int max_height) {
+    vector<Mat_<float>> G = compute_gaussian_pyramid(src, w, max_height);
 
 
     vector<Mat_<float>> L(G.size());
@@ -84,17 +87,17 @@ vector<Mat_<float>> compute_laplacian_pyramid(Mat_<float> src, Mat_<float> w) {
     return L;
 }
 
-Mat_<Vec3b> merge_images(Mat_<Vec3b> &im_a, Mat_<Vec3b> &im_b, Mat_<float> region) {
+Mat_<Vec3b> merge_images(Mat_<Vec3b> &im_a, Mat_<Vec3b> &im_b, Mat_<float> region,  int max_height) {
     vector<Mat_<float>> vec_a = separate_channels(im_a);
     vector<Mat_<float>> vec_b = separate_channels(im_b);
     vector<Mat_<float>> vec_s;
     for (int i = 0; i < 3; i++) {
-        vec_s.push_back(merge_images(vec_a[i], vec_b[i], region));
+        vec_s.push_back(merge_images(vec_a[i], vec_b[i], region, max_height));
     }
     return merge_channels(vec_s);
 }
 
-Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> region) {
+Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> region,  int max_height) {
 
     Mat_<float> result;
     Mat_<float> w = generating_kernel(0.3f);
@@ -102,10 +105,10 @@ Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> regio
         region = generate_half_mask(im_a.cols);
     }
 
-    vector<Mat_<float>> LA = compute_laplacian_pyramid(im_a, w);
-    vector<Mat_<float>> LB = compute_laplacian_pyramid(im_b, w);
+    vector<Mat_<float>> LA = compute_laplacian_pyramid(im_a, w, max_height);
+    vector<Mat_<float>> LB = compute_laplacian_pyramid(im_b, w, max_height);
     vector<Mat_<float>> LS;
-    vector<Mat_<float>> masks = compute_gaussian_pyramid(region, w);
+    vector<Mat_<float>> masks = compute_gaussian_pyramid(region, w, max_height);
 
 
     for (int l = 0; l < LA.size(); l++) {

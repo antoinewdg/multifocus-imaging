@@ -25,7 +25,8 @@ Mat_<float> generating_kernel(float a);
  * @param w kernel to be used
  * @return
  */
-vector<Mat_<float>> compute_gaussian_pyramid(Mat_<float> src, Mat_<float> w);
+vector<Mat_<float>> compute_gaussian_pyramid(Mat_<float> src, Mat_<float> w,
+                                             int max_height = -1);
 
 /**
  * Compute the Laplacian pyramid of an image
@@ -34,7 +35,8 @@ vector<Mat_<float>> compute_gaussian_pyramid(Mat_<float> src, Mat_<float> w);
  * @param w kernel to be used
  * @return
  */
-vector<Mat_<float>> compute_laplacian_pyramid(Mat_<float> src, Mat_<float> w);
+vector<Mat_<float>> compute_laplacian_pyramid(Mat_<float> src, Mat_<float> w,
+                                              int max_height = -1);
 
 /**
  * Merge two grayscale images using multi-resolution splining.
@@ -48,7 +50,9 @@ vector<Mat_<float>> compute_laplacian_pyramid(Mat_<float> src, Mat_<float> w);
  * @param region
  * @return
  */
-Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> region = Mat_<float>());
+Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b,
+                         Mat_<float> region = Mat_<float>(),
+                         int max_height = -1);
 
 /**
  * Merge two colored images using multi-resolution splining.
@@ -63,7 +67,9 @@ Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> regio
  * @param region
  * @return
  */
-Mat_<Vec3b> merge_images(Mat_<Vec3b> &im_a, Mat_<Vec3b> &im_b, Mat_<float> region = Mat_<float>());
+Mat_<Vec3b> merge_images(Mat_<Vec3b> &im_a, Mat_<Vec3b> &im_b,
+                         Mat_<float> region = Mat_<float>(),
+                         int max_height = -1);
 
 
 #endif //MULTI_FOCUS_SPLINING_H
