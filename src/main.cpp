@@ -26,10 +26,12 @@ int main() {
     Mat_<Vec3b> im_a = load_color("lena_color_tile_a.tiff");
     Mat_<Vec3b> im_b = load_color("lena_color_tile_b.tiff");
     Mat_<float> region = load_grayscale("mask.tiff");
-    Mat_<Vec3b> im_s = merge_images(im_a, im_b, region);
+    for (int i = 0; i < 20; i++) {
+        Mat_<Vec3b> im_s = merge_images(im_a, im_b, region, i);
 
-    cv::imshow("a", im_s);
-    cv::waitKey();
+        cv::imshow("a", im_s);
+        cv::waitKey();
+    }
 
     return 0;
 }
