@@ -51,6 +51,19 @@ inline Mat_<float> load_grayscale(const string &filename) {
     return out;
 }
 
+inline Mat_<float> to_grayscale(Mat_<Vec3b> &src) {
+    cv::Mat out;
+    cv::cvtColor(src, out, CV_BGR2GRAY);
+    out.convertTo(out, CV_32F);
+    out /= 255.f;
+    return out;
+}
+
+inline void display_and_block(cv::Mat im) {
+    cv::imshow("window", im);
+    cv::waitKey();
+}
+
 inline Mat_<Vec3b> load_color(const string &filename) {
     Mat_<Vec3b> original = cv::imread(filename);
     if (original.empty())                      // Check for invalid input

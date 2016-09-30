@@ -53,9 +53,9 @@ Mat_<float> generate_half_mask(int n) {
     return mask;
 }
 
-vector<Mat_<float>> compute_gaussian_pyramid(Mat_<float> src, Mat_<float> w, int max_height ) {
+vector<Mat_<float>> compute_gaussian_pyramid(Mat_<float> src, Mat_<float> w, int max_height) {
     vector<Mat_<float>> G = {src};
-    if(max_height < 0){
+    if (max_height < 0) {
         max_height = std::numeric_limits<int>::max();
     }
     int h = 0;
@@ -87,7 +87,7 @@ vector<Mat_<float>> compute_laplacian_pyramid(Mat_<float> src, Mat_<float> w, in
     return L;
 }
 
-Mat_<Vec3b> merge_images(Mat_<Vec3b> &im_a, Mat_<Vec3b> &im_b, Mat_<float> region,  int max_height) {
+Mat_<Vec3b> merge_images(Mat_<Vec3b> &im_a, Mat_<Vec3b> &im_b, Mat_<float> region, int max_height) {
     vector<Mat_<float>> vec_a = separate_channels(im_a);
     vector<Mat_<float>> vec_b = separate_channels(im_b);
     vector<Mat_<float>> vec_s;
@@ -97,7 +97,8 @@ Mat_<Vec3b> merge_images(Mat_<Vec3b> &im_a, Mat_<Vec3b> &im_b, Mat_<float> regio
     return merge_channels(vec_s);
 }
 
-Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> region,  int max_height) {
+
+Mat_<float> merge_square_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> region, int max_height) {
 
     Mat_<float> result;
     Mat_<float> w = generating_kernel(0.3f);
@@ -121,4 +122,66 @@ Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> regio
     }
 
     return result;
+}
+
+Mat_<float> subrect_copy(Mat_<float> &m, cv::Rect &r) {
+    return m.colRange(r.x, r.x + r.width).rowRange(r.y, r.y + r.height).clone();
+}
+
+cv::Rect find_ideal_subrect(Mat_<float> &region){
+    int j, left_j, right_j;
+    for (j = 0; j < region.cols; j++) {
+        for (int i = 0; i < region.rows; i++) {
+            if (region(i, j) != 0.f) {
+                break;
+            }
+        }
+    }
+    left_j = j;
+    for (j = region.cols - 1; j >= 0; j--) {
+        for (int i = 0; i < region.rows; i++) {
+            if (region(i, j) != 1.f) {
+                break;
+            }
+        }
+    }
+    right_j = j + 1;
+    int n = right_j - left_j;
+    return cv::Rect(left_j - (region.rows - n) / 2, 0, region.rows, region.rows);
+}
+
+Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> region, int max_height) {
+
+    if (region.empty()) {
+        region = generate_half_mask(im_a.cols);
+    }
+    if (im_a.cols == im_a.rows) {
+        return merge_square_images(im_a, im_b, region, max_height);
+    }
+
+    // Handle the case where the image has more cols than rows.
+    // In this case, the actual region has to fit in a square
+    // of size rows.
+    Mat_<float> result(im_a.rows, im_a.cols);
+    auto r = find_ideal_subrect(region);
+    Mat_<float> jm_a = subrect_copy(im_a, r);
+    Mat_<float> jm_b = subrect_copy(im_b, r);
+    Mat_<float> region_b = subrect_copy(region, r);
+
+    Mat_<float> subresult = merge_square_images(jm_a, jm_b, region_b, max_height);
+
+    for (int i = 0; i < result.rows; i++) {
+        for (int j = 0; j < result.cols; j++) {
+            if (j < r.x) {
+                result(i, j) = im_a(i, j);
+            } else if (j < r.x + r.width) {
+                result(i, j) = subresult(i, j - r.x);
+            } else {
+                result(i, j) = im_b(i, j);
+            }
+        }
+    }
+
+    return result;
+
 }
