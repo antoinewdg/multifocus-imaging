@@ -8,30 +8,26 @@
 #include "opencv2/xfeatures2d.hpp"
 #include "utils.h"
 #include "splining.h"
+#include "tiling.h"
 
-using cv::Vec3b;
 
-std::vector<cv::Mat_<Vec3b>> load_images(std::string name, unsigned long n, std::string ext) {
-    std::vector<cv::Mat_<Vec3b>> images(n);
+vector<Mat_<Vec3b>> load_images(string name, unsigned long n, string ext) {
+    vector<Mat_<Vec3b>> images(n);
     for (int i = 0; i < n; i++) {
-        std::string filename = name + "_" + std::to_string(i) + '.' + ext;
-        images[i] = cv::imread(filename);
+        std::string filename = name + std::to_string(i) + '.' + ext;
+        images[i] = load_color(filename);
     }
 
     return images;
 }
 
 int main() {
-
-    Mat_<Vec3b> im_a = load_color("lena_color_tile_a.tiff");
-    Mat_<Vec3b> im_b = load_color("lena_color_tile_b.tiff");
-    Mat_<float> region = load_grayscale("mask.tiff");
-    for (int i = 0; i < 20; i++) {
-        Mat_<Vec3b> im_s = merge_images(im_a, im_b, region, i);
-
-        cv::imshow("a", im_s);
-        cv::waitKey();
+    auto images = load_images("sbug0", 13, "png");
+    for (int i = 20; i < 50; i += 6) {
+        auto result = build_multifocus_images(images, i);
+        display_and_block(result);
     }
+
 
     return 0;
 }

@@ -16,7 +16,7 @@ Mat_<float> generating_kernel(float a) {
     return kernel;
 }
 
-Mat_<float> expand(Mat_<float> &src, Mat_<float> &w) {
+Mat_<float> expand(Mat_<float> &src, const Mat_<float> &w) {
 
     int n = src.rows * 2 - 1;
     Mat_<float> expanded(n, n, 0.0f);
@@ -27,6 +27,14 @@ Mat_<float> expand(Mat_<float> &src, Mat_<float> &w) {
     }
     return convolution_with_reflection(expanded, w);
 
+}
+
+Mat_<float> expand_n_times(Mat_<float> &src, const Mat_<float> &w, int n) {
+    Mat_<float> r = src;
+    for (int i = 0; i < n; i++) {
+        r = expand(r, w);
+    }
+    return r;
 }
 
 Mat_<float> reduce(Mat_<float> &src, Mat_<float> &w) {
@@ -42,20 +50,20 @@ Mat_<float> reduce(Mat_<float> &src, Mat_<float> &w) {
     return reduced;
 }
 
-Mat_<float> generate_half_mask(int n) {
-    Mat_<float> mask(n, n, 0.0f);
-    for (int i = 0; i < n; i++) {
-        mask(i, n / 2) = 0.5f;
-        for (int j = 0; j < n / 2; j++) {
+Mat_<float> generate_half_mask(int rows, int cols) {
+    Mat_<float> mask(rows, cols, 0.0f);
+    for (int i = 0; i < rows; i++) {
+        mask(i, cols / 2) = 0.5f;
+        for (int j = 0; j < cols / 2; j++) {
             mask(i, j) = 1.0f;
         }
     }
     return mask;
 }
 
-vector<Mat_<float>> compute_gaussian_pyramid(Mat_<float> src, Mat_<float> w, int max_height ) {
+vector<Mat_<float>> compute_gaussian_pyramid(Mat_<float> src, Mat_<float> w, int max_height) {
     vector<Mat_<float>> G = {src};
-    if(max_height < 0){
+    if (max_height < 0) {
         max_height = std::numeric_limits<int>::max();
     }
     int h = 0;
@@ -87,7 +95,7 @@ vector<Mat_<float>> compute_laplacian_pyramid(Mat_<float> src, Mat_<float> w, in
     return L;
 }
 
-Mat_<Vec3b> merge_images(Mat_<Vec3b> &im_a, Mat_<Vec3b> &im_b, Mat_<float> region,  int max_height) {
+Mat_<Vec3b> merge_images(Mat_<Vec3b> &im_a, Mat_<Vec3b> &im_b, Mat_<float> region, int max_height) {
     vector<Mat_<float>> vec_a = separate_channels(im_a);
     vector<Mat_<float>> vec_b = separate_channels(im_b);
     vector<Mat_<float>> vec_s;
@@ -97,12 +105,13 @@ Mat_<Vec3b> merge_images(Mat_<Vec3b> &im_a, Mat_<Vec3b> &im_b, Mat_<float> regio
     return merge_channels(vec_s);
 }
 
-Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> region,  int max_height) {
+
+Mat_<float> merge_square_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> region, int max_height) {
 
     Mat_<float> result;
     Mat_<float> w = generating_kernel(0.3f);
     if (region.empty()) {
-        region = generate_half_mask(im_a.cols);
+        region = generate_half_mask(im_a.rows, im_a.cols);
     }
 
     vector<Mat_<float>> LA = compute_laplacian_pyramid(im_a, w, max_height);
@@ -121,4 +130,55 @@ Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> regio
     }
 
     return result;
+}
+
+
+cv::Rect find_ideal_subrect(Mat_<float> &region) {
+    int j, left_j, right_j;
+    for (j = 0; j < region.cols; j++) {
+        for (int i = 0; i < region.rows; i++) {
+            if (region(i, j) != 0.f) {
+                break;
+            }
+        }
+    }
+    left_j = j;
+    for (j = region.cols - 1; j >= 0; j--) {
+        for (int i = 0; i < region.rows; i++) {
+            if (region(i, j) != 1.f) {
+                break;
+            }
+        }
+    }
+    right_j = j + 1;
+    int n = right_j - left_j;
+    return cv::Rect(left_j - (region.rows - n) / 2, 0, region.rows, region.rows);
+}
+
+Mat_<float> pad_to_next_square(Mat_<float> original) {
+    int n = 1;
+    int m = std::max(original.rows, original.cols);
+    while (n + 1 < m) {
+        n *= 2;
+    }
+    n += 1;
+    Mat_<float> padded(n, n, 0.f);
+    original.copyTo(padded(cv::Rect(0, 0, original.cols, original.rows)));
+    return padded;
+}
+
+Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> region, int max_height) {
+
+    if (region.empty()) {
+        region = generate_half_mask(im_a.rows, im_a.cols);
+    }
+    auto padded_a = pad_to_next_square(im_a);
+    auto padded_b = pad_to_next_square(im_b);
+    auto padded_region = pad_to_next_square(region);
+    auto padded_merge = merge_square_images(padded_a, padded_b, padded_region, max_height);
+
+    Mat_<float> merged(im_a.rows, im_a.cols);
+    padded_merge(cv::Rect(0, 0, im_a.cols, im_a.rows)).copyTo(merged);
+
+    return merged;
 }
