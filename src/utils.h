@@ -68,9 +68,14 @@ inline Mat_<Vec3b> load_color(const string &filename) {
     Mat_<Vec3b> original = cv::imread(filename);
     if (original.empty())                      // Check for invalid input
     {
-        cerr << "Could not open or find the image" << endl;
+        cerr << "Could not open or find " << filename << endl;
     }
     return original;
+}
+
+template <class T>
+inline Mat_<T> subrect_clone(Mat_<T> &m, const cv::Rect &r) {
+    return m.colRange(r.x, r.x + r.width).rowRange(r.y, r.y + r.height).clone();
 }
 
 inline vector<Mat_<float>> separate_channels(Mat_<Vec3b> &im) {
@@ -100,5 +105,9 @@ inline Mat_<float> convolution_with_reflection(Mat_<float> a, Mat_<float> k) {
     return result;
 }
 
-
+inline Mat_<Vec3b> convolution_with_reflection(Mat_<Vec3b> a, Mat_<float> k) {
+    Mat_<Vec3b> result;
+    cv::filter2D(a, result, CV_8UC3, k, cv::Point(-1, -1), 0, cv::BORDER_REFLECT101);
+    return result;
+}
 #endif //MULTI_FOCUS_UTILS_H

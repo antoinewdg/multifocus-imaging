@@ -18,6 +18,7 @@
  */
 Mat_<float> generating_kernel(float a);
 
+Mat_<float> expand_n_times(Mat_<float> &src,const  Mat_<float> &w, int n);
 /**
  * Compute the Gaussian pyramid of an image
  *

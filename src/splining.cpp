@@ -16,7 +16,7 @@ Mat_<float> generating_kernel(float a) {
     return kernel;
 }
 
-Mat_<float> expand(Mat_<float> &src, Mat_<float> &w) {
+Mat_<float> expand(Mat_<float> &src, const Mat_<float> &w) {
 
     int n = src.rows * 2 - 1;
     Mat_<float> expanded(n, n, 0.0f);
@@ -27,6 +27,14 @@ Mat_<float> expand(Mat_<float> &src, Mat_<float> &w) {
     }
     return convolution_with_reflection(expanded, w);
 
+}
+
+Mat_<float> expand_n_times(Mat_<float> &src, const Mat_<float> &w, int n) {
+    Mat_<float> r = src;
+    for (int i = 0; i < n; i++) {
+        r = expand(r, w);
+    }
+    return r;
 }
 
 Mat_<float> reduce(Mat_<float> &src, Mat_<float> &w) {
@@ -124,9 +132,6 @@ Mat_<float> merge_square_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float
     return result;
 }
 
-Mat_<float> subrect_copy(Mat_<float> &m, cv::Rect &r) {
-    return m.colRange(r.x, r.x + r.width).rowRange(r.y, r.y + r.height).clone();
-}
 
 cv::Rect find_ideal_subrect(Mat_<float> &region) {
     int j, left_j, right_j;
