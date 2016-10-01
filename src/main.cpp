@@ -23,15 +23,12 @@ std::vector<cv::Mat_<Vec3b>> load_images(std::string name, unsigned long n, std:
 
 int main() {
 
-    Mat_<Vec3b> im_a = load_color("lena_color_tile_a.tiff");
-    Mat_<Vec3b> im_b = load_color("lena_color_tile_b.tiff");
-    Mat_<float> region = load_grayscale("mask.tiff");
-    for (int i = 0; i < 20; i++) {
-        Mat_<Vec3b> im_s = merge_images(im_a, im_b, region, i);
-
-        cv::imshow("a", im_s);
-        cv::waitKey();
-    }
+    Mat_<Vec3b> im_a = load_color("sbug03.png");
+    Mat_<Vec3b> im_b = load_color("sbug03b.png");
+    Mat_<float> region = load_grayscale("mask.png");
+    display_and_block(im_a);
+    display_and_block(im_b);
+    display_and_block(merge_images(im_a, im_b, region));
 
     return 0;
 }

@@ -42,11 +42,11 @@ Mat_<float> reduce(Mat_<float> &src, Mat_<float> &w) {
     return reduced;
 }
 
-Mat_<float> generate_half_mask(int n) {
-    Mat_<float> mask(n, n, 0.0f);
-    for (int i = 0; i < n; i++) {
-        mask(i, n / 2) = 0.5f;
-        for (int j = 0; j < n / 2; j++) {
+Mat_<float> generate_half_mask(int rows, int cols) {
+    Mat_<float> mask(rows, cols, 0.0f);
+    for (int i = 0; i < rows; i++) {
+        mask(i, cols / 2) = 0.5f;
+        for (int j = 0; j < cols / 2; j++) {
             mask(i, j) = 1.0f;
         }
     }
@@ -103,7 +103,7 @@ Mat_<float> merge_square_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float
     Mat_<float> result;
     Mat_<float> w = generating_kernel(0.3f);
     if (region.empty()) {
-        region = generate_half_mask(im_a.cols);
+        region = generate_half_mask(im_a.rows, im_a.cols);
     }
 
     vector<Mat_<float>> LA = compute_laplacian_pyramid(im_a, w, max_height);
@@ -128,7 +128,7 @@ Mat_<float> subrect_copy(Mat_<float> &m, cv::Rect &r) {
     return m.colRange(r.x, r.x + r.width).rowRange(r.y, r.y + r.height).clone();
 }
 
-cv::Rect find_ideal_subrect(Mat_<float> &region){
+cv::Rect find_ideal_subrect(Mat_<float> &region) {
     int j, left_j, right_j;
     for (j = 0; j < region.cols; j++) {
         for (int i = 0; i < region.rows; i++) {
@@ -150,38 +150,30 @@ cv::Rect find_ideal_subrect(Mat_<float> &region){
     return cv::Rect(left_j - (region.rows - n) / 2, 0, region.rows, region.rows);
 }
 
+Mat_<float> pad_to_next_square(Mat_<float> original) {
+    int n = 1;
+    int m = std::max(original.rows, original.cols);
+    while (n + 1 < m) {
+        n *= 2;
+    }
+    n += 1;
+    Mat_<float> padded(n, n, 0.f);
+    original.copyTo(padded(cv::Rect(0, 0, original.cols, original.rows)));
+    return padded;
+}
+
 Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> region, int max_height) {
 
     if (region.empty()) {
-        region = generate_half_mask(im_a.cols);
+        region = generate_half_mask(im_a.rows, im_a.cols);
     }
-    if (im_a.cols == im_a.rows) {
-        return merge_square_images(im_a, im_b, region, max_height);
-    }
+    auto padded_a = pad_to_next_square(im_a);
+    auto padded_b = pad_to_next_square(im_b);
+    auto padded_region = pad_to_next_square(region);
+    auto padded_merge = merge_square_images(padded_a, padded_b, padded_region, max_height);
 
-    // Handle the case where the image has more cols than rows.
-    // In this case, the actual region has to fit in a square
-    // of size rows.
-    Mat_<float> result(im_a.rows, im_a.cols);
-    auto r = find_ideal_subrect(region);
-    Mat_<float> jm_a = subrect_copy(im_a, r);
-    Mat_<float> jm_b = subrect_copy(im_b, r);
-    Mat_<float> region_b = subrect_copy(region, r);
+    Mat_<float> merged(im_a.rows, im_a.cols);
+    padded_merge(cv::Rect(0, 0, im_a.cols, im_a.rows)).copyTo(merged);
 
-    Mat_<float> subresult = merge_square_images(jm_a, jm_b, region_b, max_height);
-
-    for (int i = 0; i < result.rows; i++) {
-        for (int j = 0; j < result.cols; j++) {
-            if (j < r.x) {
-                result(i, j) = im_a(i, j);
-            } else if (j < r.x + r.width) {
-                result(i, j) = subresult(i, j - r.x);
-            } else {
-                result(i, j) = im_b(i, j);
-            }
-        }
-    }
-
-    return result;
-
+    return merged;
 }
