@@ -29,7 +29,7 @@ int main() {
     auto images = load_images("sbug0", 13, "png");
 
     vector<Mat_<Vec3b>> results;
-    for(int t = 3 ; t <=3 ; t++){
+    for(int t = 1 ; t <=7 ; t++){
         auto elapsed = measure<>::execution([&results, &images, t](){
             results.push_back(custom_multifocus(images,t));
         });
