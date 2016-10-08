@@ -11,6 +11,7 @@
 
 
 #include <iostream>
+#include <chrono>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -24,6 +25,22 @@ using std::endl;
 using std::string;
 using std::cerr;
 using cv::Vec3b;
+
+
+template<typename TimeT = std::chrono::milliseconds>
+struct measure
+{
+    template<typename F, typename ...Args>
+    static typename TimeT::rep execution(F&& func, Args&&... args)
+    {
+        auto start = std::chrono::steady_clock::now();
+        std::forward<decltype(func)>(func)(std::forward<Args>(args)...);
+        auto duration = std::chrono::duration_cast< TimeT>
+                (std::chrono::steady_clock::now() - start);
+        return duration.count();
+    }
+};
+
 
 inline void scale(cv::Mat m, double alpha = 0, double beta = 1) {
     cv::normalize(m, m, alpha, beta, cv::NORM_MINMAX);

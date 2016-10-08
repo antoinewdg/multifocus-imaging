@@ -4,6 +4,8 @@
 
 #include "splining.h"
 
+typedef vector<Mat_<float>> Pyramid;
+
 Mat_<float> generating_kernel(float a) {
     float b = 0.25f, c = 0.25f - 0.5f * a;
     Mat_<float> kernel(5, 5);
@@ -181,4 +183,71 @@ Mat_<float> merge_images(Mat_<float> &im_a, Mat_<float> &im_b, Mat_<float> regio
     padded_merge(cv::Rect(0, 0, im_a.cols, im_a.rows)).copyTo(merged);
 
     return merged;
+}
+
+Mat_<float> merge_multiple_images(vector<Mat_<float>> &images,
+                                  vector<Mat_<float>> &regions) {
+    vector<Mat_<float>> padded_images, padded_regions;
+    vector<Pyramid> image_pyramids, region_pyramids;
+    Mat_<float> w = generating_kernel(0.3f);
+//
+//    for (auto r : regions) {
+//        display_and_block(r);
+//    }
+//    cout << regions.size() << " " << images.size() << endl;
+
+
+    for (int i = 0; i < images.size(); i++) {
+        padded_images.push_back(pad_to_next_square(images[i]));
+        padded_regions.push_back(pad_to_next_square(regions[i]));
+//        display_and_block(regions[i]);
+//        display_and_block(padded_regions[i]);
+        image_pyramids.push_back(compute_laplacian_pyramid(padded_images[i], w));
+        region_pyramids.push_back(compute_gaussian_pyramid(padded_regions[i], w));
+    }
+
+    Pyramid merge_pyramid;
+    for (int l = 0; l < region_pyramids[0].size(); l++) {
+        merge_pyramid.emplace_back(region_pyramids[0][l].rows,
+                                   region_pyramids[0][l].cols, 0.f);
+        for (int i = 0; i < region_pyramids.size(); i++) {
+            merge_pyramid[l] += region_pyramids[i][l].mul(image_pyramids[i][l]);
+        }
+    }
+
+//    for(auto p : merge_pyramid){
+//        display_and_block(p);
+//    }
+
+
+    Mat_<float> padded_merge = merge_pyramid.back().clone(),
+            merge(images[0].rows, images[1].cols);
+
+    for (int l = merge_pyramid.size() - 2; l >= 0; l--) {
+        padded_merge = merge_pyramid[l] + expand(padded_merge, w);
+    }
+
+    return padded_merge(cv::Rect(0, 0, images[0].cols, images[0].rows)).clone();
+
+
+}
+
+
+Mat_<Vec3b> merge_multiple_images(vector<Mat_<Vec3b>> &images,
+                                  vector<Mat_<float>> &regions) {
+    vector<vector<Mat_<float>>> separated(3);
+    for (auto im : images) {
+        auto channels = separate_channels(im);
+        separated[0].push_back(channels[0]);
+        separated[1].push_back(channels[1]);
+        separated[2].push_back(channels[2]);
+    }
+    vector<Mat_<float>> separated_merge;
+    separated_merge.push_back(merge_multiple_images(separated[0], regions));
+    separated_merge.push_back(merge_multiple_images(separated[1], regions));
+    separated_merge.push_back(merge_multiple_images(separated[2], regions));
+//    display_and_block(separated_merge.back());
+
+    return merge_channels(separated_merge);
+
 }

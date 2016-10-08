@@ -14,5 +14,5 @@ Mat_<float> tiled_laplacian(cv::Mat_<float> &laplacian, vector<vector<cv::Rect>>
 
 Mat_<uchar> compute_depth_map(vector<Mat_<float>> tiled_laplacians);
 
-Mat_<Vec3b> build_multifocus_images(vector<Mat_<Vec3b>> &images, int tsize = 9);
+Mat_<Vec3b> tiling_multifocus(vector<Mat_<Vec3b>> &images, int tsize = 9);
 #endif //MULTI_FOCUS_TILING_H

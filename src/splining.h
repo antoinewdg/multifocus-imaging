@@ -18,7 +18,7 @@
  */
 Mat_<float> generating_kernel(float a);
 
-Mat_<float> expand_n_times(Mat_<float> &src,const  Mat_<float> &w, int n);
+Mat_<float> expand_n_times(Mat_<float> &src, const Mat_<float> &w, int n);
 /**
  * Compute the Gaussian pyramid of an image
  *
@@ -72,5 +72,13 @@ Mat_<Vec3b> merge_images(Mat_<Vec3b> &im_a, Mat_<Vec3b> &im_b,
                          Mat_<float> region = Mat_<float>(),
                          int max_height = -1);
 
+Mat_<float> merge_multiple_images(vector<Mat_<float>>& images,
+                                  vector<Mat_<float>>& regions);
 
+Mat_<Vec3b> merge_multiple_images(vector<Mat_<Vec3b>>& images,
+                                  vector<Mat_<float>>& regions);
+
+
+
+Mat_<float> pad_to_next_square(Mat_<float> original);
 #endif //MULTI_FOCUS_SPLINING_H

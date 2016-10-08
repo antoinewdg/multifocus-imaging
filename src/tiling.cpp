@@ -111,7 +111,7 @@ Mat_<Vec3b> remove_padding(Mat_<Vec3b> &src, int tsize) {
     return result;
 }
 
-Mat_<Vec3b> build_multifocus_images(vector<Mat_<Vec3b>> &raw_images, int tsize) {
+Mat_<Vec3b> tiling_multifocus(vector<Mat_<Vec3b>> &raw_images, int tsize) {
     vector<Mat_<Vec3b>> images(raw_images.size());
     for (int i = 0; i < images.size(); i++) {
         images[i] = add_padding(raw_images[i], tsize);
