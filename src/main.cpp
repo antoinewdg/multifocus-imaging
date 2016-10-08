@@ -1,12 +1,5 @@
 #include <iostream>
 #include <vector>
-//#include <opencv2/core/core.hpp>
-//#include <opencv2/imgcodecs.hpp>
-//#include <opencv2/highgui/highgui.hpp>
-//#include <opencv2/imgproc/imgproc.hpp>
-//#include <opencv2/features2d/features2d.hpp>
-//
-//#include "opencv2/xfeatures2d.hpp"
 #include "utils.h"
 #include "splining.h"
 #include "tiling.h"
@@ -24,11 +17,10 @@ vector<Mat_<Vec3b>> load_images(string name, unsigned long n, string ext) {
 }
 
 
-
 int main() {
     auto images = load_images("sbug0", 13, "png");
-
     vector<Mat_<Vec3b>> results;
+
     for(int t = 1 ; t <=7 ; t++){
         auto elapsed = measure<>::execution([&results, &images, t](){
             results.push_back(custom_multifocus(images,t));

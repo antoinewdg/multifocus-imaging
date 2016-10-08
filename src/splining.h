@@ -18,7 +18,7 @@
  */
 Mat_<float> generating_kernel(float a);
 
-Mat_<float> expand_n_times(Mat_<float> &src, const Mat_<float> &w, int n);
+//Mat_<float> expand_n_times(Mat_<float> &src, const Mat_<float> &w, int n);
 /**
  * Compute the Gaussian pyramid of an image
  *
@@ -26,8 +26,7 @@ Mat_<float> expand_n_times(Mat_<float> &src, const Mat_<float> &w, int n);
  * @param w kernel to be used
  * @return
  */
-vector<Mat_<float>> compute_gaussian_pyramid(Mat_<float> src, Mat_<float> w,
-                                             int max_height = -1);
+vector<Mat_<float>> compute_gaussian_pyramid(Mat_<float> src, Mat_<float> w);
 
 /**
  * Compute the Laplacian pyramid of an image
@@ -36,8 +35,7 @@ vector<Mat_<float>> compute_gaussian_pyramid(Mat_<float> src, Mat_<float> w,
  * @param w kernel to be used
  * @return
  */
-vector<Mat_<float>> compute_laplacian_pyramid(Mat_<float> src, Mat_<float> w,
-                                              int max_height = -1);
+vector<Mat_<float>> compute_laplacian_pyramid(Mat_<float> src, Mat_<float> w);
 
 /**
  * Merge two grayscale images using multi-resolution splining.
@@ -79,6 +77,4 @@ Mat_<Vec3b> merge_multiple_images(vector<Mat_<Vec3b>>& images,
                                   vector<Mat_<float>>& regions);
 
 
-
-Mat_<float> pad_to_next_square(Mat_<float> original);
 #endif //MULTI_FOCUS_SPLINING_H

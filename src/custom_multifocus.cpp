@@ -15,8 +15,7 @@ Mat_<float> dilate(Mat_<float> a, int t) {
 Mat_<uchar> build_depth_map(vector<Mat_<Vec3b>> images, int t) {
     vector<Mat_<float>> focus_measures;
     for (auto im : images) {
-        auto padded = pad_to_next_square(to_grayscale(im));
-        auto pyramid = compute_laplacian_pyramid(padded, generating_kernel(0.3f));
+        auto pyramid = compute_laplacian_pyramid(to_grayscale(im), generating_kernel(0.3f));
         focus_measures.push_back(dilate(pyramid[0], t));
     }
 
