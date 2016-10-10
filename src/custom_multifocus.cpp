@@ -38,7 +38,6 @@ Mat_<uchar> build_depth_map(vector<Mat_<Vec3b>> images, int t) {
 
 vector<Mat_<float>> build_masks(unsigned long n, Mat_<uchar> depth_map) {
     vector<Mat_<float>> masks;
-    cout << n << endl;
     for (int i = 0; i < n; i++) {
         Mat_<uchar> d = depth_map == i;
         masks.emplace_back();

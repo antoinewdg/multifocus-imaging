@@ -3,6 +3,7 @@
 #include "utils.h"
 #include "splining.h"
 #include "tiling.h"
+#include "alignment.h"
 #include "custom_multifocus.h"
 
 
@@ -17,25 +18,33 @@ vector<Mat_<Vec3b>> load_images(string name, unsigned long n, string ext) {
 }
 
 
-int main() {
-    auto images = load_images("sbug0", 13, "png");
+int main(int argc, char *argv[]) {
+
+    if (argc < 5) {
+        cout << "Usage: multifocus path_prefix n_images extension realign" << endl;
+        cout << "Example: multifocus small_stuff_anim0 6 jpg" << endl;
+
+        return 0;
+    }
+    auto images = load_images(argv[1], std::stoi(string(argv[2])), argv[3]);
+    bool realign = argv[4] == "1";
+
+    if (realign) {
+        align_on_middle_image(images);
+    }
     vector<Mat_<Vec3b>> results;
 
-    for(int t = 1 ; t <=7 ; t++){
-        auto elapsed = measure<>::execution([&results, &images, t](){
-            results.push_back(custom_multifocus(images,t));
+    for (int t = 1; t <= 7; t++) {
+        auto elapsed = measure<>::execution([&results, &images, t]() {
+            results.push_back(custom_multifocus(images, t));
         });
-        cout << "Built for t=" << t << " in "<< float(elapsed)/1000 << "s" << endl;
+        cout << "Built for t=" << t << " in " << float(elapsed) / 1000 << "s" << endl;
+        cv::imwrite(string("out/custom_") + std::to_string(t) + ".png", results.back());
     }
 
-    for(auto r : results){
+    for (auto r : results) {
         display_and_block(r);
     }
-    for (int i = 2; i < 50; i += 6) {
-        auto result = tiling_multifocus(images, i);
-        cv::imwrite(string("out/tiling_") + std::to_string(i) + ".png", result);
-    }
-
 
     return 0;
 }

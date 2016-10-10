@@ -9,7 +9,7 @@ set(SOURCE_FILES src/main.cpp
         src/splining.cpp src/splining.h
         src/tiling.cpp src/tiling.h
         src/custom_multifocus.cpp src/custom_multifocus.h
-        )
+        src/alignment.cpp src/alignment.h)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
