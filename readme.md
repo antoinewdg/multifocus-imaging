@@ -44,4 +44,4 @@ The
 
 ## Reference:
 
-* \[1\]: <a id="1"></a> [Multi-focus imaging using local focus estimation and mosaicking](https://vision.ece.ucsb.edu/sites/vision.ece.ucsb.edu/files/publications/fedorov_focus_icip2006.pdf/)
+* \[1\]: <a name="1"></a> [Multi-focus imaging using local focus estimation and mosaicking](https://vision.ece.ucsb.edu/sites/vision.ece.ucsb.edu/files/publications/fedorov_focus_icip2006.pdf/)
