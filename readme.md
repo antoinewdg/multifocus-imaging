@@ -1,14 +1,13 @@
 # Multi-focus imaging
 
-Implementation of [1]
-as a school project. [Test](#1).
+Initially a simple implementation of [1] as a school project, I ended up making my
+own implementation of a multi-resolution spline algorithm inspired by the techniques
+used in [1].
 
-A big part of the project relies on the paper 
-[A Multiresolution Spline With Application to
- Image Mosaics](http://www.cs.toronto.edu/~mangas/teaching/320/assignments/a3/spline83.pdf).
+A big part of the project relies on [2], which mostly uses techniques described in [3].
 
-
-Use of the [OpenCV 3.1](http://opencv.org/opencv-3-1.html) library for image processing routines.
+This project is written in C++ and uses the [OpenCV 3.1](http://opencv.org/opencv-3-1.html)
+library for image processing routines.
 
 
 ## Building and running
@@ -37,10 +36,12 @@ described above:
 ./multi_focus ../files/sbug0 13 png 0
 ```
 
-The 
+The program loads the input images and displays the resulting multi-focus images 
+for different values of a parameter t.
 
 
 
 ## Reference:
 
-* \[1\]: <a name="1"></a> [Multi-focus imaging using local focus estimation and mosaicking](https://vision.ece.ucsb.edu/sites/vision.ece.ucsb.edu/files/publications/fedorov_focus_icip2006.pdf/)
+* \[1\]: [Multi-focus imaging using local focus estimation and mosaicking](https://vision.ece.ucsb.edu/sites/vision.ece.ucsb.edu/files/publications/fedorov_focus_icip2006.pdf/)
+* \[2\]: [A Multiresolution Spline With Application to Image Mosaics](http://www.cs.toronto.edu/~mangas/teaching/320/assignments/a3/spline83.pdf)

@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
             results.push_back(custom_multifocus(images, t));
         });
         cout << "Built for t=" << t << " in " << float(elapsed) / 1000 << "s" << endl;
-        cv::imwrite(string("out/custom_") + std::to_string(t) + ".png", results.back());
+//        cv::imwrite(string(argv[1]) + "_out_"+ std::to_string(t) + ".png", results.back());
     }
 
     for (auto r : results) {
