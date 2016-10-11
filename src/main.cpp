@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     auto images = load_images(argv[1], std::stoi(string(argv[2])), argv[3]);
-    bool realign = argv[4] == "1";
+    bool realign = string(argv[4]) == "1";
 
     if (realign) {
         align_on_middle_image(images);

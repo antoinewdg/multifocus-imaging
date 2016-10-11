@@ -23,4 +23,22 @@ two set of images.
 
 ### Best output (t=4)
 
-![multifocus_bug0(files/sbug0_out_4.png)]
+![multifocus_bug](files/sbug0_out_4.png)
+
+
+## Room
+
+The pictures are slightly misaligned so a realignment step has to be performed.
+
+### Input
+
+![room](files/small_stuff_anim00.jpg)
+![room](files/small_stuff_anim01.jpg)
+![room](files/small_stuff_anim02.jpg)
+![room](files/small_stuff_anim03.jpg)
+![room](files/small_stuff_anim04.jpg)
+![room](files/small_stuff_anim05.jpg)
+
+### Output (any value of t gives a similar output)
+
+![multifocus_room](files/small_stuff_anim0_out_5.jpg)
