@@ -1,7 +1,6 @@
 # Multi-focus imaging
 
-Implementation of the paper 
-[Multi-focus imaging using local focus estimation and mosaicking]()
+Implementation of [1]
 as a school project. [Test](#1).
 
 A big part of the project relies on the paper 
