@@ -41,4 +41,4 @@ The pictures are slightly misaligned so a realignment step has to be performed.
 
 ### Output (any value of t gives a similar output)
 
-![multifocus_room](files/small_stuff_anim0_out_5.jpg)
+![multifocus_room](files/small_stuff_anim0_out_5.png)
