@@ -5,7 +5,8 @@ two set of images.
 
 ## Bug
 
-Input images: 
+### Input
+
 ![bug](files/sbug00.png)
 ![bug](files/sbug01.png)
 ![bug](files/sbug02.png)
@@ -19,3 +20,7 @@ Input images:
 ![bug](files/sbug010.png)
 ![bug](files/sbug011.png)
 ![bug](files/sbug012.png)
+
+### Best output (t=4)
+
+![multifocus_bug0(files/sbug0_out_4.png)]
