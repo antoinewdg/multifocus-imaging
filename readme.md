@@ -40,10 +40,8 @@ described above:
 
 The 
 
-[1]:https://vision.ece.ucsb.edu/sites/vision.ece.ucsb.edu/files/publications/fedorov_focus_icip2006.pdf/  ""
-
 
 
 ## Reference:
 
-* \[1\]:<a id="1" />[Multi-focus imaging using local focus estimation and mosaicking][1]
+* \[1\]:<a id="1" />[Multi-focus imaging using local focus estimation and mosaicking](https://vision.ece.ucsb.edu/sites/vision.ece.ucsb.edu/files/publications/fedorov_focus_icip2006.pdf/)
