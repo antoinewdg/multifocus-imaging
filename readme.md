@@ -47,7 +47,7 @@ for different values of a parameter t.
 After implementing the algorithm described in [1], I found it had several limitations:
 * it does not perform well when a part of the scene is blurry in every input image, 
 the tiles used to decompose the image are visible in these parts
-* it is quite complicated, recomposing the image tile by tile is not a trivial task, 
+* it is quite complicated: recomposing the image tile by tile is not a trivial task, 
 and for optimal quality we also need to perform a graph cut for every tile fusion
 * it does not take advantage of the power of the multi-resolution spline: only small tiles
 are merged using this technique
