@@ -29,6 +29,8 @@ two set of images.
 ## Room
 
 The pictures are slightly misaligned so a realignment step has to be performed.
+Source of the pictures: Nathan Ricci's [website](http://www.eecs.tufts.edu/~nricci01/comp_photo/assign2.html)
+of for a similar assignment.
 
 ### Input
 
